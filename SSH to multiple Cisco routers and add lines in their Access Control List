@@ -1,0 +1,56 @@
+In my copmany, we realised that multiple devices are missing certain lines from the ACL we used for their public interfaces.
+We had to SSH to each single router and configure the missing lines. We had to create a different .txt file for each router as we
+had to configure each router's Public IP address in their ACLs.
+
+The following script reads each router's IP address from a .txt file (one IP per line). It connects to each router using SSH and then
+adds the missing lines in their ACLs.
+
+#libraries to import
+import paramiko
+import time
+
+#variables
+username = input("Give your username: ")
+password = input("Give password: ")
+
+# opens the .txt file
+file = open('Public IPs')
+
+# reads each IP address from the .txt file (one IP per line)
+for ip in file:
+    #define session
+    SESSION = paramiko.SSHClient()
+    SESSION.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+    
+    #connection parameters
+    SESSION.connect(ip,port=22,username=username,password=password,look_for_keys=False,allow_agent=False)
+    
+    #open interactive shell
+    DEVICE_ACCESS = SESSION.invoke_shell()
+    
+    #commands to send to hardware
+    print('The following device will be configured ' + ip)
+    g = input("Would you like to continue? Press Enter to continue")
+    DEVICE_ACCESS.send('ip access-list extended public-interface\n')
+    DEVICE_ACCESS.send('permit tcp y.y.y.y 0.0.0.15 host x.x.x.x eq 22\n'.replace("x.x.x.x",ip))
+    DEVICE_ACCESS.send('permit tcp y.y.y.y 0.0.0.7 host x.x.x.x eq 22\n'.replace("x.x.x.x",ip))
+    DEVICE_ACCESS.send('permit tcp y.y.y.y 0.0.0.7 host x.x.x.x eq 22\n'.replace("x.x.x.x",ip))
+    DEVICE_ACCESS.send('permit tcp y.y.y.y 0.0.0.7 host x.x.x.x eq 22\n'.replace("x.x.x.x",ip))
+    DEVICE_ACCESS.send('permit tcp y.y.y.y 0.0.0.7 host x.x.x.x eq 22\n'.replace("x.x.x.x",ip))
+    DEVICE_ACCESS.send('permit tcp y.y.y.y 0.0.0.7 host x.x.x.x eq 22\n'.replace("x.x.x.x",ip))
+    DEVICE_ACCESS.send('do wr\n')
+
+    #how long for script to run in seconds
+    time.sleep(4)
+
+    #how many bytes we can receive (max is 65000)
+    output = DEVICE_ACCESS.recv(65000)
+
+    s = str(output)
+    print (output.decode('ascii'))
+    print(s)
+
+    #close session
+    SESSION.close
+
+file.close()
