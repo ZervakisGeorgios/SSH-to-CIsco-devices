@@ -21,7 +21,7 @@ output = net_connect.send_command('show ip int brief')
 print (output)
 
 # Create a list of commands to send one after te=he other
-config_commands = ['int loop 0', 'ip address 1.1.1.1 255.255.255.0']
+config_commands = ['int loop 0', 'ip address x.x.x.x x.x.x.x']
 # sends multiple commands
 output = net_connect.send_config_set(config_commands)
 print (output)
