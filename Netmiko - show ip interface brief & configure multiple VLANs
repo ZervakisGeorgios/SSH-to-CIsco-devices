@@ -1,0 +1,33 @@
+from netmiko import ConnectHandler
+
+iosv_l2 = {
+    'device_type': 'cisco_ios',
+    'ip': 'x.x.x.x',
+    'username': 'username',
+    'password': 'pass',
+    # optionals
+    # 'port' : 22,      default is 22
+    'secret':'enable pass',   #default to ''
+    # 'verbose': False, default to False
+}
+
+
+net_connect = ConnectHandler(**iosv_l2)
+net_connect.find_prompt()
+# it goes into enable mode using the password you gave previously
+net_connect.enable()
+
+# sends a single command
+output = net_connect.send_command('show ip int brief')
+print (output)
+
+# config_commands = ['int loop 0', 'ip address 1.1.1.1 255.255.255.0']
+# sends multiple commands
+# output = net_connect.send_config_set(config_commands)
+# print (output)
+#
+# for n in range (2,21):
+#     print ("Creating VLAN " + str(n))
+#     config_commands = ['vlan ' + str(n), 'name Python_VLAN ' + str(n)]
+#     output = net_connect.send_config_set(config_commands)
+#     print (output)
