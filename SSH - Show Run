@@ -1,0 +1,38 @@
+#libraries to import
+import paramiko
+import time
+from getpass import getpass
+from getpass import getpass
+
+#variables
+ip = 'x.x.x.x'
+username = 'username'
+password = 'password'
+
+# define session
+SESSION = paramiko.SSHClient()
+SESSION.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+
+# connection parameters
+SESSION.connect(ip,port=22,username=username,password=password,look_for_keys=False,allow_agent=False)
+
+# open interactive shell
+DEVICE_ACCESS = SESSION.invoke_shell()
+
+#commands to send to hardware
+DEVICE_ACCESS.send(b'term length 0\n')
+DEVICE_ACCESS.send(b'enable\n')
+DEVICE_ACCESS.send(b'enablePassword\n')
+DEVICE_ACCESS.send(b'show run\n')
+
+#how long for script to run in seconds
+time.sleep(4)
+
+#how many bytes we can receive (max is 65000)
+output = DEVICE_ACCESS.recv(65000)
+s = str(output)
+print (output.decode('ascii'))
+print(s)
+
+#close session
+SESSION.close
